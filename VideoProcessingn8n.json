@@ -1,0 +1,179 @@
+{
+  "name": "My workflow 2",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "test",
+        "formDescription": "Process Minig",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Video",
+              "fieldType": "file",
+              "acceptFileTypes": ".mp4"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -320,
+        -100
+      ],
+      "id": "3e18708d-7ea1-4b49-a1a2-b6fab04d67d2",
+      "name": "On form submission",
+      "webhookId": "f2030a50-8923-4939-8193-eb6815f4eb64",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Objective:\nYou are an expert in analyzing narrated explainer videos. Analyze the provided video {{ $json.Video[0].filename }} and break it down into meaningful stages or phases as described by the narrator and shown on screen. Your task is to extract conceptual stages from the video and have steps under each stage based on the process being explained (e.g., order processing, employee onboarding).\n\nInstructions:\nTo complete the task, pay attention to these elements and possible indicators of a new stage:\n1. **Narration Content** – Focus on what the speaker is explaining and how the process unfolds.\n2. **Slide or Text Transitions** – Look for new slides, headings, or highlighted content that signals a new stage.\n3. **Conceptual Steps** – For each stage, summarize what it is about, what actions or information are involved, and what purpose it serves.\n4. **Do not describe user interface actions unless they are clearly shown** (e.g., button clicks, input fields). This task is about process stages, not UI walkthroughs.\n5. Avoid stating \"the video shows\" or \"the narrator says\" – just explain the process directly.\n6. Think of each stage as a clear building block in the overall flow of the process.\n\nConstraints:\n- Each stage or phase must be written as a **separate stage** with a sequence number.\n- Each should stage should have steps on how to accomplish the task in that stage.\n- Use clear, concise, and easy-to-understand language.\n- Your output should **only** include the list of steps without any headings or extra explanation.\n- Use a tone that is casual but informative and technical.\n\nTone:\nRespond in a clear, concise, and instructional tone. Avoid fluff. Write as if you're guiding someone through the process described in the video.\n\nOutput format:\nYour output must strictly follow the numbered stagt.es and step format given in the format instructions of the output parser.\n\n",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -60,
+        -40
+      ],
+      "id": "830900fd-31ff-44f5-b124-9d92a924c839",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-1.5-flash",
+        "options": {
+          "temperature": 0.3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        180
+      ],
+      "id": "dbb897bd-6b7f-47cb-a233-30ed0529198a",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "gWVW7AjMYXijv1UQ",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"stages\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"stage\": {\n            \"type\": \"string\"\n          },\n          \"steps\": {\n            \"type\": \"array\",\n            \"items\": {\n              \"type\": \"string\"\n            }\n          }\n        },\n        \"required\": [\"stage\", \"steps\"]\n      }\n    }\n  },\n  \"required\": [\"stages\"]\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        120,
+        180
+      ],
+      "id": "7953606e-2873-40fd-9ea1-918d9569687b",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        260,
+        -40
+      ],
+      "id": "5f2f7277-2985-4f22-87cd-264c52ddad45",
+      "name": "Respond to Webhook",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "91661399-8973-4b38-92ec-8dd4e9269fb8",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -320,
+        60
+      ],
+      "id": "a527a83d-e6c3-4a00-bffe-0d471b11e92f",
+      "name": "Webhook",
+      "webhookId": "91661399-8973-4b38-92ec-8dd4e9269fb8"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        []
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "0cdc9f3b-2164-4718-b3b2-988aefe89b49",
+  "meta": {
+    "instanceId": "e1a78b455ceca741250594324ec90a0e231dc3b36ff890d22ea7da48a16e8f8a"
+  },
+  "id": "r957Vcl4auMut5zC",
+  "tags": []
+}
