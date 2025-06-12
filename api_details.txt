@@ -1,0 +1,76 @@
+Curl
+
+curl -X 'POST' \
+  'http://localhost:8001/submit-video/' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: multipart/form-data' \
+  -F 'video=@trimmed.mp4;type=video/mp4'
+Request URL
+http://localhost:8001/submit-video/
+Server response
+Code	Details
+200	
+Response body
+Download
+nse body
+Download
+[
+  {
+    "output": {
+      "stages": [
+        {
+          "stage": "Stage 1: Initial Assessment",
+          "steps": [
+            "Gather information about the client’s needs and objectives.",
+            "Analyze the current state of the client’s systems and processes.",
+            "Identify potential areas for improvement and optimization."
+          ]
+        },
+        {
+          "stage": "Stage 2: Solution Design",
+          "steps": [
+            "Develop a tailored solution that addresses the client’s specific needs.",
+            "Design the architecture and components of the solution.",
+            "Create detailed specifications and documentation for the solution."
+          ]
+        },
+        {
+          "stage": "Stage 3: Development and Implementation",
+          "steps": [
+            "Develop the solution according to the specifications.",
+            "Test and debug the solution to ensure functionality and performance.",
+            "Deploy the solution to the client’s environment."
+          ]
+        },
+        {
+          "stage": "Stage 4: Testing and Quality Assurance",
+          "steps": [
+            "Conduct thorough testing to identify and fix any bugs or issues.",
+            "Ensure the solution meets the client’s requirements and expectations.",
+            "Obtain client sign-off on the completed solution."
+          ]
+        },
+        {
+          "stage": "Stage 5: Deployment and Go-Live",
+          "steps": [
+            "Deploy the solution to the client’s production environment.",
+            "Provide training and support to the client’s staff.",
+            "Monitor the solution’s performance and make any necessary adjustments."
+          ]
+        },
+        {
+          "stage": "Stage 6: Post-Implementation Support",
+          "steps": [
+            "Provide ongoing support and maintenance to the client.",
+            "Address any issues or questions that arise.",
+            "Continuously monitor and improve the solution’s performance."
+          ]
+        }
+      ]
+    }
+  }
+]
+
+N8N_WEBHOOK_URL = "https://diya4517.app.n8n.cloud/webhook-test/91661399-8973-4b38-92ec-8dd4e9269"
+
+
